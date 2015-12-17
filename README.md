@@ -1,0 +1,2 @@
+# johngallias.com
+configs
