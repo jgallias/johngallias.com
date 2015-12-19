@@ -18,9 +18,12 @@ server {
 
     # Mozilla SSL Generator
     # https://mozilla.github.io/server-side-tls/ssl-config-generator/?server=nginx-1.2.1&openssl=1.0.1e&hsts=yes&profile=modern
-    ssl_session_timeout 1d;
-    ssl_session_cache shared:SSL:50m;
-    # ssl_session_tickets off;
+    #ssl_session_timeout 1d;
+    #ssl_session_cache shared:SSL:50m;
+    ssl_session_tickets off;
+    # For OwnCloud Compatibilty (Tested with above values, causes subdomain to fail!)
+    ssl_session_cache shared:SSL:10m;
+    ssl_session_timeout 10m;
 
     # Diffie-Hellman parameter for DHE ciphersuites, recommended 2048 bits
     # https://weakdh.org
@@ -48,10 +51,10 @@ server {
 
     # HPKP: HTTP Public Key Pinning
 	  # https://scotthelme.co.uk/hpkp-http-public-key-pinning/
-	  add_header Public-Key-Pins 'pin-sha256="IITFcB2mWf17aVldaK7tBMcAqaVZmnxAFp9/artnMQg="; \
-    pin-sha256="x/F2WxM+Qpq49yp9olVCmmXkFyRfCajp15MTo5fG6as="; \
-    pin-sha256="ucXpS34/Ifp38F//GQJUTIO81kPH2qYtS8s+6LTshCw="; \
-    max-age=31536000; includeSubdomains';
+	  #add_header Public-Key-Pins "pin-sha256='IITFcB2mWf17aVldaK7tBMcAqaVZmnxAFp9/artnMQg='; \
+    #pin-sha256='x/F2WxM+Qpq49yp9olVCmmXkFyRfCajp15MTo5fG6as='; \
+    #pin-sha256='ucXpS34/Ifp38F//GQJUTIO81kPH2qYtS8s+6LTshCw='; \
+    #max-age=10; includeSubdomains; report-uri='https://report-uri.io/report/f5e374bca6feba77b6f7fffe49c0d11a'";
 
     # Content Security Policy - An Introduction
     # https://scotthelme.co.uk/content-security-policy-an-introduction/
@@ -59,7 +62,7 @@ server {
     # https://report-uri.io/home/generate
     # NOTE: Generator will say to use child-src instead of frame-src, but this breaks recaptcha
     # Tested: doesn't hurt to include both frame-src and child-src, but frame-src required
-    add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.google.com https://www.google-analytics.com https://www.gstatic.com https://fonts.googleapis.com https://apis.google.com https://www.google.com/recaptcha https://www.gstatic.com/recaptcha; img-src 'self' https://ssl.gstatic.com/ https://secure.gravatar.com/; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://www.gstatic.com; font-src 'self' https://fonts.gstatic.com https://www.gstatic.com; frame-src 'self' https://www.google.com/recaptcha/ https://api-b339ce13.duosecurity.com; child-src 'self' https://www.google.com/recaptcha/ https://api-b339ce13.duosecurity.com";
+    add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.google.com https://www.google-analytics.com https://www.gstatic.com https://fonts.googleapis.com https://apis.google.com https://www.google.com/recaptcha https://www.gstatic.com/recaptcha; img-src 'self' https://ssl.gstatic.com/ https://secure.gravatar.com/; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://www.gstatic.com; font-src 'self' https://fonts.gstatic.com https://www.gstatic.com; child-src 'self' https://www.google.com/recaptcha/ https://api-b339ce13.duosecurity.com; frame-src 'self' https://www.google.com/recaptcha/ https://api-b339ce13.duosecurity.com;";
 
 	  # X-Frame-Options
 	  # https://scotthelme.co.uk/hardening-your-http-response-headers/#x-frame-options

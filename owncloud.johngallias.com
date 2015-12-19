@@ -1,3 +1,6 @@
+# /etc/nginx/sites-available/owncloud.johngallias.com
+# https://doc.owncloud.org/server/8.2/admin_manual/installation/nginx_configuration.html
+
 upstream php-handler {
   server 127.0.0.1:9000;
   #server unix:/var/run/php5-fpm.sock;
@@ -14,56 +17,44 @@ server {
     listen 443 ssl;
     server_name owncloud.johngallias.com;
 
+    # Setting up a SSL Cert from Comodo
+    # https://gist.github.com/bradmontgomery/6487319
+    ssl_certificate /etc/ssl/ssl-bundle.crt;
+    ssl_certificate_key /etc/ssl/johngallias.key;
+
     # Mozilla SSL Generator
     # https://mozilla.github.io/server-side-tls/ssl-config-generator/?server=nginx-1.2.1&openssl=1.0.1e&hsts=yes&profile=modern
-    # certs sent to the client in SERVER HELLO are concatenated in ssl_certificate
+    #ssl_session_timeout 1d;
+    #ssl_session_cache shared:SSL:50m;
+    ssl_session_tickets off;
+    # For OwnCloud Compatibilty (Tested with above values, causes subdomain to fail!)
+    ssl_session_cache shared:SSL:10m;
+    ssl_session_timeout 10m;
 
-    # Namecheap: Installing a certificate on Nginx
-    # https://www.namecheap.com/support/knowledgebase/article.aspx/9419/0/nginx
-    # ssl_certificate /etc/ssl/cert_chain.crt;
+    # Diffie-Hellman parameter for DHE ciphersuites, recommended 2048 bits
+    # https://weakdh.org
+    # openssl dhparam -out dhparams.pem 2048
+    ssl_dhparam /etc/ssl/dhparams.pem;
 
-    # Namecheap: Generating CSR on Apache + OpenSSL/ModSSL/Nginx
-    # https://www.namecheap.com/support/knowledgebase/article.aspx/9446/0/apache-opensslmodsslnginx
-    # ssl_certificate_key /etc/ssl/johngallias.key;
-    # ssl_session_timeout 1d;
-    # ssl_session_cache shared:SSL:50m;
-
-    # modern configuration. tweak to your needs.
     ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
-
-    # https://weakdh.org/sysadmin.html
-    # ssl_ciphers 'ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:kEDH+AESGCM:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:ECDHE-ECDSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-DSS-AES128-SHA256:DHE-RSA-AES256-SHA256:DHE-DSS-AES256-SHA:DHE-RSA-AES256-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:AES:CAMELLIA:DES-CBC3-SHA:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!PSK:!aECDH:!EDH-DSS-DES-CBC3-SHA:!EDH-RSA-DES-CBC3-SHA:!KRB5-DES-CBC3-SHA';
-
-    # Mozilla
     ssl_ciphers 'ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:kEDH+AESGCM:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:ECDHE-ECDSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-DSS-AES128-SHA256:DHE-RSA-AES256-SHA256:DHE-DSS-AES256-SHA:DHE-RSA-AES256-SHA:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!3DES:!MD5:!PSK';
     ssl_prefer_server_ciphers on;
 
-    # Fix: Chain issues: Contains anchor
-    # https://gist.github.com/bradmontgomery/6487319
-
-    #ssl_prefer_server_ciphers on;
+    # OCSP Stapling ---
+    # fetch OCSP records from URL in ssl_certificate and cache them
     ssl_stapling on;
     ssl_stapling_verify on;
 
-    # Diffie-Hellman parameter for DHE ciphersuites, recommended 2048 bits
-    ssl_dhparam /etc/ssl/dhparams.pem;
-
-    ssl_certificate /etc/ssl/ssl-bundle.crt;
+    ## verify chain of trust of OCSP response using Root CA and Intermediate certs
     ssl_trusted_certificate /etc/ssl/trusted.crt;
-    ssl_certificate_key /etc/ssl/johngallias.key;
 
-    # ssl_session_cache shared:SSL:10m;
-    ssl_session_timeout 10m;
-
-    # HSTS (ngx_http_headers_module is required) (15768000 seconds = 6 months)
-    add_header Strict-Transport-Security max-age=15768000;
-
-    # ownCloud
-    # https://doc.owncloud.org/server/8.2/admin_manual/installation/nginx_configuration.html
-    add_header X-Content-Type-Options nosniff;
-    add_header X-Frame-Options "SAMEORIGIN";
-    add_header X-XSS-Protection "1; mode=block";
-    add_header X-Robots-Tag none;
+  # ownCloud
+  # https://doc.owncloud.org/server/8.2/admin_manual/installation/nginx_configuration.html
+  add_header Strict-Transport-Security "max-age=15768000; includeSubDomains; preload;";
+  add_header X-Content-Type-Options nosniff;
+  add_header X-Frame-Options "SAMEORIGIN";
+  add_header X-XSS-Protection "1; mode=block";
+  add_header X-Robots-Tag none;
 
     # Path to the root of your installation
   root /var/www/owncloud/;
