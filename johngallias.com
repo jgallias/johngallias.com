@@ -4,17 +4,30 @@
 server {
     listen      80;
     server_name johngallias.com www.johngallias.com;
-    return 301 https://johngallias.com$request_uri;
+    
+    # https://www.digitalocean.com/community/tutorials/how-to-secure-nginx-with-let-s-encrypt-on-ubuntu-14-04?comment=42611
+    
+    location /.well-known/acme-challenge {
+        root /var/www/letsencrypt;
+    }
+    
+    location / {
+        return 301 https://johngallias.com$request_uri;
+    }
 }
 
 server {
     listen 443 ssl;
     server_name johngallias.com www.johngallias.com;
-
-    # Setting up a SSL Cert from Comodo
-    # https://gist.github.com/bradmontgomery/6487319
-    ssl_certificate /etc/ssl/ssl-bundle.crt;
-    ssl_certificate_key /etc/ssl/johngallias.key;
+    
+    # Let's Encrypt
+    # 
+    # https://www.nginx.com/blog/free-certificates-lets-encrypt-and-nginx/
+    # https://community.letsencrypt.org/t/error-during-installation-dns-problem-query-timed-out-looking-up-mx/12688
+    # https://www.digitalocean.com/community/tutorials/how-to-secure-nginx-with-let-s-encrypt-on-ubuntu-14-04?comment=42611
+    #
+    ssl_certificate /etc/letsencrypt/live/johngallias.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/johngallias.com/privkey.pem;
 
     # Mozilla SSL Generator
     # https://mozilla.github.io/server-side-tls/ssl-config-generator/?server=nginx-1.2.1&openssl=1.0.1e&hsts=yes&profile=modern
@@ -59,7 +72,7 @@ server {
     #
     # script-src must have 'unsafe-eval' for WordPress Media Library features!
     # http://www.html5rocks.com/en/tutorials/security/content-security-policy/
-    # add_header Content-Security-Policy "default-src 'self' https://s.ytimg.com/; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.google.com https://www.google-analytics.com https://www.gstatic.com https://fonts.googleapis.com https://apis.google.com https://www.google.com/recaptcha https://www.gstatic.com/recaptcha; img-src 'self' https://ssl.gstatic.com/ https://secure.gravatar.com/; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://www.gstatic.com; font-src 'self' https://fonts.gstatic.com https://www.gstatic.com; child-src 'self' https://www.google.com/recaptcha/ https://api-b339ce13.duosecurity.com; frame-src 'self' https://www.google.com/recaptcha/ https://api-b339ce13.duosecurity.com;";
+    # 
     add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.google.com https://www.google-analytics.com https://www.gstatic.com https://fonts.googleapis.com https://apis.google.com https://www.google.com/recaptcha https://www.gstatic.com/recaptcha; img-src 'self' https://ssl.gstatic.com/ https://secure.gravatar.com/ https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://www.gstatic.com; font-src 'self' https://fonts.gstatic.com https://www.gstatic.com; child-src 'self' https://www.google.com/recaptcha/ https://api-b339ce13.duosecurity.com; frame-src 'self' https://www.google.com/recaptcha/ https://api-b339ce13.duosecurity.com; report-uri  https://report-uri.io/report/f5e374bca6feba77b6f7fffe49c0d11a";
 
     # X-Frame-Options
