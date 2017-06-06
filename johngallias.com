@@ -1,5 +1,4 @@
 # /etc/ngnix/sites-enabled/johngallias.com
-#
 
 server {
     listen      80;
@@ -60,7 +59,7 @@ server {
     # "try removing the 'always' directive if you are on a lower version of nginx."
     # HSTS Preloading
     # https://scotthelme.co.uk/hsts-preloading/
-    add_header Strict-Transport-Security "max-age=31536000; includeSubdomains; preload";
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload";
 
     # Content Security Policy - An Introduction
     # https://scotthelme.co.uk/content-security-policy-an-introduction/
@@ -73,10 +72,10 @@ server {
     # script-src must have 'unsafe-eval' for WordPress Media Library features!
     # http://www.html5rocks.com/en/tutorials/security/content-security-policy/
     # 
-    add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.google.com https://www.google-analytics.com https://www.gstatic.com https://fonts.googleapis.com https://apis.google.com https://www.google.com/recaptcha https://www.gstatic.com/recaptcha; img-src 'self' https://ssl.gstatic.com/ https://secure.gravatar.com/ https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://www.gstatic.com; font-src 'self' https://fonts.gstatic.com https://www.gstatic.com; child-src 'self' https://www.google.com/recaptcha/ https://api-b339ce13.duosecurity.com; frame-src 'self' https://www.google.com/recaptcha/ https://api-b339ce13.duosecurity.com; report-uri https://johngallias.report-uri.io/r/default/csp/enforce";
+    add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://www.gstatic.com; font-src 'self' data: https://fonts.gstatic.com https://www.gstatic.com; img-src 'self' data: https://ps.w.org/ https://ssl.gstatic.com/ https://secure.gravatar.com/ https://www.google-analytics.com; child-src 'self' https://api-b339ce13.duosecurity.com; report-uri https://johngallias.report-uri.io/r/default/csp/enforce";
 
     # X-Frame-Options
-	  # https://scotthelme.co.uk/hardening-your-http-response-headers/#x-frame-options
+    # https://scotthelme.co.uk/hardening-your-http-response-headers/#x-frame-options
     # "try removing the 'always' directive if you are on a lower version of nginx."
     add_header X-Frame-Options "SAMEORIGIN";
 
@@ -93,7 +92,6 @@ server {
     # Removing Headers - Server
     # https://scotthelme.co.uk/hardening-your-http-response-headers/#server
     server_tokens off;
-
 
     root /var/www;
     index index.php index.html index.htm;
