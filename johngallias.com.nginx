@@ -1,15 +1,16 @@
 # /etc/ngnix/sites-enabled/johngallias.com
+#
 
 server {
     listen      80;
     server_name johngallias.com www.johngallias.com;
-    
+
     # https://www.digitalocean.com/community/tutorials/how-to-secure-nginx-with-let-s-encrypt-on-ubuntu-14-04?comment=42611
-    
+
     location /.well-known/acme-challenge {
         root /var/www/letsencrypt;
     }
-    
+
     location / {
         return 301 https://johngallias.com$request_uri;
     }
@@ -18,9 +19,9 @@ server {
 server {
     listen 443 ssl;
     server_name johngallias.com www.johngallias.com;
-    
+
     # Let's Encrypt
-    # 
+    #
     # https://www.nginx.com/blog/free-certificates-lets-encrypt-and-nginx/
     # https://community.letsencrypt.org/t/error-during-installation-dns-problem-query-timed-out-looking-up-mx/12688
     # https://www.digitalocean.com/community/tutorials/how-to-secure-nginx-with-let-s-encrypt-on-ubuntu-14-04?comment=42611
@@ -71,7 +72,7 @@ server {
     #
     # script-src must have 'unsafe-eval' for WordPress Media Library features!
     # http://www.html5rocks.com/en/tutorials/security/content-security-policy/
-    # 
+    #
     add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://www.gstatic.com; font-src 'self' data: https://fonts.gstatic.com https://www.gstatic.com; img-src 'self' data: https://ps.w.org/ https://ssl.gstatic.com/ https://secure.gravatar.com/ https://www.google-analytics.com; child-src 'self' https://api-b339ce13.duosecurity.com; report-uri https://johngallias.report-uri.io/r/default/csp/enforce";
 
     # X-Frame-Options
