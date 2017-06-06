@@ -29,8 +29,6 @@ server {
     ssl_session_timeout 1d;
     ssl_session_cache shared:SSL:50m;
     ssl_session_tickets off;
-    #ssl_session_cache shared:SSL:10m;
-    #ssl_session_timeout 10m;
 
     # Diffie-Hellman parameter for DHE ciphersuites, recommended 2048 bits
     # https://weakdh.org
