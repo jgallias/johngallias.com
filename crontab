@@ -1,6 +1,0 @@
-# https://www.digitalocean.com/community/tutorials/how-to-secure-nginx-with-let-s-encrypt-on-ubuntu-14-04?utm_medium=social&utm_source=facebook&utm_campaign=letsencrypt_nginx_ubuntu_tut&utm_content=no_image
-30 2 * * 1 /opt/letsencrypt/letsencrypt-auto renew >> /var/log/le-renew.log
-35 2 * * 1 /etc/init.d/nginx reload
-# Run updates and reboot weekly: https://crontab.guru/every-week
-# Use with: https://raphaelhertzog.com/2010/09/21/debian-conffile-configuration-file-managed-by-dpkg/
-0 0 * * 0 apt update && apt -y upgrade && apt -y autoremove && reboot
